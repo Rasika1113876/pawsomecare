@@ -1,0 +1,117 @@
+package edu.fanshawe.pawsomecare.model;
+
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.io.Serializable;
+import java.sql.Timestamp;
+import java.util.List;
+
+
+/**
+ * The persistent class for the appointment database table.
+ * 
+ */
+@Entity
+@NamedQuery(name="Appointment.findAll", query="SELECT a FROM Appointment a")
+@Getter
+@Setter
+@ToString
+@RequiredArgsConstructor
+public class Appointment implements Serializable {
+	private static final long serialVersionUID = 1L;
+
+	@Id
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	private Integer id;
+
+	private double amount;
+
+	@Column(name="appt_time")
+	private Timestamp apptTime;
+
+	@Column(name="consult_detail", length = 3000)
+	private String consultDetail;
+
+	@Column(name="created_at")
+	private Timestamp createdAt;
+
+	@Column(name="is_consult")
+	private Boolean isConsult;
+
+	@Column(name="is_grooming")
+	private Boolean isGrooming;
+
+	@Column(name="is_vaccine")
+	private Boolean isVaccine;
+
+	@Column(name="next_visit_suggest")
+	private Timestamp nextVisitSuggest;
+
+	@Column(length = 3000)
+	private String reason;
+
+	private AppointmentStatus status;
+
+	@Column(name="tablet_prescribed")
+	private String tabletPrescribed;
+
+	@Column(name="updated_on")
+	private Timestamp updatedOn;
+
+	//bi-directional many-to-one association to Clinic
+	@ManyToOne
+	@JoinColumn(name="clinic")
+	private Clinic clinic;
+
+	//bi-directional many-to-one association to Feedback
+	@ManyToOne
+	@JoinColumn(name="feedback")
+	private Feedback feedbackBean;
+
+	//bi-directional many-to-one association to Pet
+	@ManyToOne
+	private Pet pet;
+
+	//bi-directional many-to-one association to User
+	@ManyToOne
+	@JoinColumn(name="appt_by")
+	private User user;
+
+	//bi-directional many-to-one association to Vaccine
+	@ManyToOne
+	@JoinColumn(name="vaccine")
+	private Vaccine vaccine;
+
+	//bi-directional many-to-one association to Staff
+	@ManyToOne
+	@JoinColumn(name="staff_id")
+	private Staff staff;
+
+	@Transient
+	public User staffDetails;
+
+	//bi-directional many-to-many association to Medicine
+	@ManyToMany
+	@JoinTable(
+		name="appointment_medicine"
+		, joinColumns={
+			@JoinColumn(name="appointment_id")
+			}
+		, inverseJoinColumns={
+			@JoinColumn(name="medicine_id")
+			}
+		)
+	@ToString.Exclude
+	private List<Medicine> medicines;
+
+	@ManyToOne
+	@JoinColumn(name="service_id", nullable=false)
+	private Service service;
+
+	//bi-directional many-to-many association to Grooming
+	@ManyToMany(mappedBy="appointments")
+	@ToString.Exclude
+	private List<Grooming> groomings;
+
+}
